@@ -14,7 +14,18 @@ data "aws_iam_policy_document" "lambda_role_policy" {
         sid = "pubbit"
 
         actions = ["sns:Publish"]
-        resources = ["*"]
+        resources = [
+            "${aws_sns_topic.device_locator.arn}",
+        ]
+    }
+
+    statement {
+        sid = "deadletter"
+
+        actions = ["sqs:SendMessage"]
+        resources = [
+            "${aws_sqs_queue.lambda_dead_letter.arn}",
+        ]
     }
 
     ## allow logging

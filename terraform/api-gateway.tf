@@ -3,10 +3,17 @@ resource "aws_api_gateway_rest_api" "device_locator" {
     description = "DeviceLocator gateway"
 }
 
-resource "aws_api_gateway_resource" "proxy" {
+resource "aws_api_gateway_resource" "record_location" {
     rest_api_id = "${aws_api_gateway_rest_api.device_locator.id}"
 
     parent_id = "${aws_api_gateway_rest_api.device_locator.root_resource_id}"
+    path_part = "record_location"
+}
+
+resource "aws_api_gateway_resource" "proxy" {
+    rest_api_id = "${aws_api_gateway_rest_api.device_locator.id}"
+
+    parent_id = "${aws_api_gateway_resource.record_location.id}"
     path_part = "{device_id+}"
 }
 
@@ -45,7 +52,7 @@ resource "aws_api_gateway_deployment" "device_locator" {
     ]
 
     rest_api_id = "${aws_api_gateway_rest_api.device_locator.id}"
-    stage_name = "test"
+    stage_name = "prod"
     stage_description = "${random_pet.deployment_trigger.id}"
 }
 

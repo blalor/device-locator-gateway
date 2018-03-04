@@ -15,4 +15,8 @@ resource "aws_lambda_function" "device_locator" {
             "topic_arn" = "${aws_sns_topic.device_locator.arn}"
         }
     }
+
+    dead_letter_config {
+        target_arn = "${aws_sqs_queue.lambda_dead_letter.arn}"
+    }
 }
