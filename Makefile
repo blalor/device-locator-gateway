@@ -18,8 +18,13 @@ stage/device-locator.zip: $(shell find functions/device-locator -type f) | stage
 stage/publish-old-location.zip: $(shell find functions/publish-old-location -type f) | stage
 	(cd functions/publish-old-location && zip -r - .) > $@
 
+## https://docs.aws.amazon.com/lambda/latest/dg/lambda-python-how-to-create-deployment-package.html
+stage/dynamodb-store-location.zip: $(shell find functions/dynamodb-store-location -type f) | stage
+	pip install -t functions/dynamodb-store-location -r functions/dynamodb-store-location/requirements.txt
+	(cd functions/dynamodb-store-location && zip -r - .) > $@
+
 .PHONY: package
-package: stage/device-locator.zip stage/publish-old-location.zip
+package: stage/device-locator.zip stage/publish-old-location.zip stage/dynamodb-store-location.zip
 
 ## terraform init
 .PHONY: init
@@ -30,7 +35,7 @@ terraform/.terraform:
 ## terraform plan
 .PHONY: plan
 plan: $(PLANFILE)
-$(PLANFILE): $(TF_SOURCES) stage/device-locator.zip stage/publish-old-location.zip | stage
+$(PLANFILE): $(TF_SOURCES) stage/device-locator.zip stage/publish-old-location.zip stage/dynamodb-store-location.zip | stage
 	cd terraform && terraform plan -out $@
 
 ## terraform apply
