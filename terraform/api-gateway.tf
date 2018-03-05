@@ -33,7 +33,7 @@ resource "aws_api_gateway_integration" "lambda" {
 
     type = "AWS_PROXY"
     uri = "${aws_lambda_function.device_locator.invoke_arn}"
-    integration_http_method = "POST"
+    integration_http_method = "ANY"
 }
 
 resource "random_pet" "deployment_trigger" {

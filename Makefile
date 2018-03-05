@@ -15,8 +15,11 @@ stage:
 stage/device-locator.zip: $(shell find functions/device-locator -type f) | stage
 	(cd functions/device-locator && zip -r - .) > $@
 
+stage/publish-old-location.zip: $(shell find functions/publish-old-location -type f) | stage
+	(cd functions/publish-old-location && zip -r - .) > $@
+
 .PHONY: package
-package: stage/device-locator.zip
+package: stage/device-locator.zip stage/publish-old-location.zip
 
 ## terraform init
 .PHONY: init
@@ -27,7 +30,7 @@ terraform/.terraform:
 ## terraform plan
 .PHONY: plan
 plan: $(PLANFILE)
-$(PLANFILE): $(TF_SOURCES) stage/device-locator.zip | stage
+$(PLANFILE): $(TF_SOURCES) stage/device-locator.zip stage/publish-old-location.zip | stage
 	cd terraform && terraform plan -out $@
 
 ## terraform apply
