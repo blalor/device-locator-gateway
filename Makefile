@@ -12,15 +12,18 @@ default: plan
 stage:
 	mkdir -p $@
 
+## https://docs.aws.amazon.com/lambda/latest/dg/lambda-python-how-to-create-deployment-package.html
+%/.requirements.met: %/requirements.txt
+	pip install -t $(dir $<) -r $<
+	@touch $@
+
 stage/device-locator.zip: $(shell find functions/device-locator -type f) | stage
 	(cd functions/device-locator && zip -r - .) > $@
 
 stage/publish-old-location.zip: $(shell find functions/publish-old-location -type f) | stage
 	(cd functions/publish-old-location && zip -r - .) > $@
 
-## https://docs.aws.amazon.com/lambda/latest/dg/lambda-python-how-to-create-deployment-package.html
-stage/dynamodb-store-location.zip: $(shell find functions/dynamodb-store-location -type f) | stage
-	pip install -t functions/dynamodb-store-location -r functions/dynamodb-store-location/requirements.txt
+stage/dynamodb-store-location.zip: $(shell find functions/dynamodb-store-location -type f) functions/dynamodb-store-location/.requirements.met | stage
 	(cd functions/dynamodb-store-location && zip -r - .) > $@
 
 .PHONY: package
