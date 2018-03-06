@@ -8,19 +8,14 @@ variable "package_path" {
     description = "path to the deployment package"
 }
 
-variable "table_arn" {
+variable "api_gateway_exec_arn" {
     type = "string"
-    description = "dynamodb table arn"
-}
-
-variable "table_name" {
-    type = "string"
-    description = "dynamodb table name"
+    description = "full execution arn for the api gateway"
 }
 
 variable "topic" {
     type = "string"
-    description = "ARN of topic for subscription to device location updates"
+    description = "ARN of topic for publishing device location updates"
 }
 
 variable "dead_letter_queue" {
@@ -29,5 +24,5 @@ variable "dead_letter_queue" {
 }
 
 locals {
-    fn_name = "dynamodb-store-location"
+    fn_name = "device-locator"
 }

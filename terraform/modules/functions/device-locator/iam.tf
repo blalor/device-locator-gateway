@@ -11,10 +11,18 @@ data "aws_iam_policy_document" "assume" {
 
 data "aws_iam_policy_document" "exec" {
     statement {
+        sid = "pubbit"
+
+        actions = ["sns:Publish"]
+        resources = [
+            "${var.topic}",
+        ]
+    }
+
+    statement {
         sid = "deadletter"
 
         actions = ["sqs:SendMessage"]
-
         resources = [
             "${var.dead_letter_queue}",
         ]
@@ -32,22 +40,11 @@ data "aws_iam_policy_document" "exec" {
 
         resources = ["*"]
     }
-
-    ## db
-    statement {
-        sid = "recordit"
-
-        actions = ["dynamodb:PutItem"]
-
-        resources = [
-            "${var.table_arn}"
-        ]
-    }
 }
 
 resource "aws_iam_role" "lambda" {
     path = "/service-role/"
-    name = "LambdaDynamodbStoreLocation"
+    name = "LambdaDeviceLocator"
     description = "Permissions for the ${local.fn_name} function"
     assume_role_policy = "${data.aws_iam_policy_document.assume.json}"
 }

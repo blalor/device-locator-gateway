@@ -13,7 +13,7 @@ resource "aws_lambda_function" "fn" {
 
     environment {
         variables = {
-            "table_name" = "${var.table_name}"
+            "topic_arn" = "${var.topic}"
         }
     }
 
@@ -22,12 +22,11 @@ resource "aws_lambda_function" "fn" {
     }
 }
 
-resource "aws_lambda_permission" "sns" {
-    statement_id = "AllowSNSInvokeOldLocation"
+resource "aws_lambda_permission" "api_gateway" {
+    statement_id = "AllowAPIGatewayInvoke"
     action = "lambda:InvokeFunction"
-    function_name = "${aws_lambda_function.fn.function_name}"
+    function_name = "${aws_lambda_function.fn.arn}"
+    principal = "apigateway.amazonaws.com"
 
-    principal = "sns.amazonaws.com"
-
-    source_arn = "${var.topic}"
+    source_arn = "${var.api_gateway_exec_arn}"
 }

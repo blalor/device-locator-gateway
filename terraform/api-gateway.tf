@@ -32,7 +32,7 @@ resource "aws_api_gateway_integration" "lambda" {
     http_method = "${aws_api_gateway_method.proxy.http_method}"
 
     type = "AWS_PROXY"
-    uri = "${aws_lambda_function.device_locator.invoke_arn}"
+    uri = "${module.device_locator.invoke_arn}"
     integration_http_method = "ANY"
 }
 
@@ -54,15 +54,4 @@ resource "aws_api_gateway_deployment" "device_locator" {
     rest_api_id = "${aws_api_gateway_rest_api.device_locator.id}"
     stage_name = "prod"
     stage_description = "${random_pet.deployment_trigger.id}"
-}
-
-resource "aws_lambda_permission" "api_gateway" {
-    statement_id = "AllowAPIGatewayInvoke"
-    action = "lambda:InvokeFunction"
-    function_name = "${aws_lambda_function.device_locator.arn}"
-    principal = "apigateway.amazonaws.com"
-
-    # The /*/* portion grants access from any method on any resource
-    # within the API Gateway "REST API".
-    source_arn = "${aws_api_gateway_deployment.device_locator.execution_arn}/*/*"
 }
