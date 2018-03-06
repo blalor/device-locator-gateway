@@ -48,10 +48,12 @@ data "aws_iam_policy_document" "lambda_role_policy_device_locator" {
 resource "aws_iam_role" "lambda_execution_device_locator" {
     path = "/service-role/"
     name = "LambdaDeviceLocator"
+    description = "Permissions for the device-locator function"
     assume_role_policy = "${data.aws_iam_policy_document.assume_role_lambda.json}"
 }
 
 resource "aws_iam_role_policy" "lambda_execution_device_locator" {
+    name = "${aws_iam_role.lambda_execution_device_locator.name}"
     role = "${aws_iam_role.lambda_execution_device_locator.id}"
     policy = "${data.aws_iam_policy_document.lambda_role_policy_device_locator.json}"
 }
@@ -86,10 +88,12 @@ data "aws_iam_policy_document" "lambda_role_policy_publish_old_location" {
 resource "aws_iam_role" "lambda_execution_publish_old_location" {
     path = "/service-role/"
     name = "LambdaPublishOldLocation"
+    description = "Permissions for the publish-old-location function"
     assume_role_policy = "${data.aws_iam_policy_document.assume_role_lambda.json}"
 }
 
 resource "aws_iam_role_policy" "lambda_execution_publish_old_location" {
+    name = "${aws_iam_role.lambda_execution_publish_old_location.name}"
     role = "${aws_iam_role.lambda_execution_publish_old_location.id}"
     policy = "${data.aws_iam_policy_document.lambda_role_policy_publish_old_location.json}"
 }
@@ -135,10 +139,12 @@ data "aws_iam_policy_document" "lambda_role_policy_dynamodb_store_location" {
 resource "aws_iam_role" "lambda_execution_dynamodb_store_location" {
     path = "/service-role/"
     name = "LambdaDynamodbStoreLocation"
+    description = "Permissions for the dynamodb-store-location function"
     assume_role_policy = "${data.aws_iam_policy_document.assume_role_lambda.json}"
 }
 
 resource "aws_iam_role_policy" "lambda_execution_dynamodb_store_location" {
+    name = "${aws_iam_role.lambda_execution_dynamodb_store_location.name}"
     role = "${aws_iam_role.lambda_execution_dynamodb_store_location.id}"
     policy = "${data.aws_iam_policy_document.lambda_role_policy_dynamodb_store_location.json}"
 }
