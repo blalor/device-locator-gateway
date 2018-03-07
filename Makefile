@@ -12,19 +12,33 @@ default: plan
 stage:
 	mkdir -p $@
 
+## don't delete intermediate files
+.PRECIOUS: stage/%/_ve
+stage/%/_ve: | stage
+	virtualenv $@
+
+stage/%/_ve/requirements.met: functions/%/requirements.txt | stage/%/_ve
+	sh -c '. $|/bin/activate && pip install -q -r $<'
+	touch $@
+
 ## https://docs.aws.amazon.com/lambda/latest/dg/lambda-python-how-to-create-deployment-package.html
-%/.requirements.met: %/requirements.txt
-	pip install -t $(dir $<) -r $<
-	@touch $@
+##stage/%.zip: stage/%/_ve/requirements.met
+##	rm -f $@
+##	(cd $(dir $<)/lib/python2.7/site-packages && zip -r $@ .)
+##	(cd $(patsubst stage/%/_ve/requirements.met,functions/%,$<) && zip -r $@ .)
 
 stage/device-locator.zip: $(shell find functions/device-locator -type f) | stage
-	(cd functions/device-locator && zip -r - .) > $@
+	rm -f $@
+	(cd functions/device-locator && zip -9r $(CURRENT_DIR)/$@ .)
 
 stage/publish-old-location.zip: $(shell find functions/publish-old-location -type f) | stage
-	(cd functions/publish-old-location && zip -r - .) > $@
+	rm -f $@
+	(cd functions/publish-old-location && zip -9r $(CURRENT_DIR)/$@ .)
 
-stage/dynamodb-store-location.zip: $(shell find functions/dynamodb-store-location -type f) functions/dynamodb-store-location/.requirements.met | stage
-	(cd functions/dynamodb-store-location && zip -r - .) > $@
+stage/dynamodb-store-location.zip: $(shell find functions/dynamodb-store-location -type f ) stage/dynamodb-store-location/_ve/requirements.met
+	rm -f $@
+	(cd stage/dynamodb-store-location/_ve/lib/python2.7/site-packages && zip -9qr $(CURRENT_DIR)/$@ .)
+	(cd functions/dynamodb-store-location && zip -9r $(CURRENT_DIR)/$@ .)
 
 .PHONY: package
 package: stage/device-locator.zip stage/publish-old-location.zip stage/dynamodb-store-location.zip
@@ -38,15 +52,15 @@ terraform/.terraform:
 ## terraform plan
 .PHONY: plan
 plan: $(PLANFILE)
-$(PLANFILE): $(TF_SOURCES) stage/device-locator.zip stage/publish-old-location.zip stage/dynamodb-store-location.zip | stage
+$(PLANFILE): $(TF_SOURCES) stage/device-locator.zip stage/publish-old-location.zip stage/dynamodb-store-location.zip
 	cd terraform && terraform plan -out $@
 
 ## terraform apply
 .PHONY: apply
 apply: $(PLANFILE)
 	cd terraform && terraform apply $(PLANFILE)
-	@rm -f $(CURRENT_DIR)/stage/terraform.plan
+	@rm -f $(PLANFILE)
 
 .PHONY: clean
 clean:
-	rm -rfv stage
+	rm -rf stage

@@ -14,6 +14,7 @@ resource "aws_lambda_function" "fn" {
     environment {
         variables = {
             "table_name" = "${var.table_name}"
+            "dark_sky_api_key" = "${var.dark_sky_api_key}"
         }
     }
 

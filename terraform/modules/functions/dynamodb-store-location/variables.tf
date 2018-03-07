@@ -18,6 +18,11 @@ variable "table_name" {
     description = "dynamodb table name"
 }
 
+variable "dark_sky_api_key" {
+    type = "string"
+    description = "api key for Dark Sky"
+}
+
 variable "topic" {
     type = "string"
     description = "ARN of topic for subscription to device location updates"

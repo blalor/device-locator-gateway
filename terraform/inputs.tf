@@ -8,3 +8,8 @@ variable "old_location_target_endpoint" {
     type = "string"
     description = "old /record_location endpoint to receive updates"
 }
+
+variable "dark_sky_api_key" {
+    type = "string"
+    description = "api key for Dark Sky"
+}

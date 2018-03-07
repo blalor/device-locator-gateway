@@ -1,3 +1,4 @@
 .envrc
 stage/
 .requirements.met
+terraform.tfvars
