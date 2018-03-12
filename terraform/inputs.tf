@@ -13,3 +13,8 @@ variable "dark_sky_api_key" {
     type = "string"
     description = "api key for Dark Sky"
 }
+
+variable "opencage_api_key" {
+    type = "string"
+    description = "api key for OpenCage"
+}

@@ -20,6 +20,7 @@ EPOCH = datetime.datetime(1970, 1, 1, tzinfo=iso8601.UTC)
 
 TABLE_NAME = os.environ["table_name"]
 DARK_SKY_API_KEY = os.environ["dark_sky_api_key"]
+OPENCAGE_API_KEY = os.environ["opencage_api_key"]
 
 
 # https://darksky.net/dev/docs#time-machine-request
@@ -42,6 +43,31 @@ def dark_sky(lat, lon, time):
     resp.raise_for_status()
 
     return resp.json()
+
+
+def opencage(lat, lon):
+    kept_annotations = set(("flag", "geohash", "sun", "timezone"))
+
+    url = "https://api.opencagedata.com/geocode/v1/json"
+    resp = requests.get(
+        url,
+        params={
+            "key": OPENCAGE_API_KEY,
+            "q": "{lat},{lon}".format(lat=lat, lon=lon),
+            "no_record": 1,
+        }
+    )
+
+    resp.raise_for_status()
+
+    results = resp.json()["results"]
+    for r in results:
+        ## strip out unwanted annotations
+        discarded_annotations = set(r["annotations"].keys()) - kept_annotations
+        for d in discarded_annotations:
+            del r["annotations"][d]
+
+    return results
 
 
 def handler(event, context):
@@ -117,6 +143,13 @@ def handler(event, context):
 
         except Exception:
             logger.exception("unable to retrieve data from Dark Sky")
+
+        try:
+            item["opencage"] = opencage(latitude, longitude)
+            item["opencage"] = util.replace_floats(item["opencage"])
+
+        except Exception:
+            logger.exception("unable to retrieve data from OpenCage")
 
         table.put_item(Item=item)
 

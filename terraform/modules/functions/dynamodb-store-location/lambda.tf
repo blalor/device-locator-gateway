@@ -15,6 +15,7 @@ resource "aws_lambda_function" "fn" {
         variables = {
             "table_name" = "${var.table_name}"
             "dark_sky_api_key" = "${var.dark_sky_api_key}"
+            "opencage_api_key" = "${var.opencage_api_key}"
         }
     }
 
