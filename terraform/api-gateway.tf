@@ -3,6 +3,7 @@ resource "aws_api_gateway_rest_api" "device_locator" {
     description = "DeviceLocator gateway"
 }
 
+## /record_location
 resource "aws_api_gateway_resource" "record_location" {
     rest_api_id = "${aws_api_gateway_rest_api.device_locator.id}"
 
@@ -10,6 +11,7 @@ resource "aws_api_gateway_resource" "record_location" {
     path_part = "record_location"
 }
 
+## /record_location/{device_id+}
 resource "aws_api_gateway_resource" "proxy" {
     rest_api_id = "${aws_api_gateway_rest_api.device_locator.id}"
 
@@ -17,6 +19,7 @@ resource "aws_api_gateway_resource" "proxy" {
     path_part = "{device_id+}"
 }
 
+## GET /record_location/{device_id+} (but "ANY" instead)
 resource "aws_api_gateway_method" "proxy" {
     rest_api_id = "${aws_api_gateway_rest_api.device_locator.id}"
 
