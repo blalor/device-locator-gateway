@@ -23,7 +23,6 @@ resource "aws_api_gateway_method" "proxy" {
     authorization = "NONE"
 }
 
-
 ## log ALL THE THINGS
 resource "aws_api_gateway_method_settings" "proxy" {
     rest_api_id = "${local.rest_api_id}"
@@ -36,9 +35,9 @@ resource "aws_api_gateway_method_settings" "proxy" {
     }
 }
 
-## https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-create-api-as-simple-proxy-for-lambda.html
 resource "aws_api_gateway_integration" "lambda" {
     rest_api_id = "${local.rest_api_id}"
+
     resource_id = "${aws_api_gateway_resource.proxy.id}"
     http_method = "${aws_api_gateway_method.proxy.http_method}"
 

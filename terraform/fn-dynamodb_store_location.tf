@@ -1,5 +1,5 @@
 module "dynamodb_store_location" {
-    source = "modules/functions/dynamodb-store-location"
+    source = "./modules/functions/dynamodb-store-location"
 
     bucket = "${aws_s3_bucket.lambda_functions.id}"
     package_path = "${path.module}/../stage/dynamodb-store-location.zip"

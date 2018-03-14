@@ -40,8 +40,16 @@ stage/dynamodb-store-location.zip: $(shell find functions/dynamodb-store-locatio
 	(cd stage/dynamodb-store-location/_ve/lib/python2.7/site-packages && zip -9qr $(CURRENT_DIR)/$@ .)
 	(cd functions/dynamodb-store-location && zip -9r $(CURRENT_DIR)/$@ .)
 
-.PHONY: package
-package: stage/device-locator.zip stage/publish-old-location.zip stage/dynamodb-store-location.zip
+stage/gpx.zip: $(shell find functions/gpx -type f ) stage/gpx/_ve/requirements.met
+	rm -f $@
+	(cd stage/gpx/_ve/lib/python2.7/site-packages && zip -9qr $(CURRENT_DIR)/$@ .)
+	(cd functions/gpx && zip -9r $(CURRENT_DIR)/$@ .)
+
+PACKAGES := \
+	stage/device-locator.zip \
+	stage/publish-old-location.zip \
+	stage/dynamodb-store-location.zip \
+	stage/gpx.zip
 
 ## terraform init
 .PHONY: init
@@ -51,8 +59,8 @@ terraform/.terraform:
 
 ## terraform plan
 .PHONY: plan
-plan: $(PLANFILE)
-$(PLANFILE): $(TF_SOURCES) stage/device-locator.zip stage/publish-old-location.zip stage/dynamodb-store-location.zip
+plan: $(PLANFILE) | terraform/.terraform
+$(PLANFILE): $(TF_SOURCES) $(PACKAGES)
 	cd terraform && terraform plan -out $@
 
 ## terraform apply
