@@ -14,6 +14,12 @@ resource "random_pet" "deployment_trigger" {
     ## all the things that should trigger a new deployment
     keepers = {
         resource_proxy_path = "${aws_api_gateway_resource.proxy.path_part}"
+
+        gw_meth_proxy_method = "${aws_api_gateway_method.proxy.http_method}"
+        gw_meth_proxy_rsrc = "${aws_api_gateway_method.proxy.resource_id}"
+        gw_meth_proxy_auth = "${aws_api_gateway_method.proxy.authorization}"
+
+        gw_int_lambda_int_meth = "${aws_api_gateway_integration.lambda.integration_http_method}"
     }
 }
 

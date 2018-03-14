@@ -19,8 +19,21 @@ resource "aws_api_gateway_method" "proxy" {
     rest_api_id = "${local.rest_api_id}"
 
     resource_id = "${aws_api_gateway_resource.proxy.id}"
-    http_method = "ANY"
+    http_method = "GET"
     authorization = "NONE"
+}
+
+
+## log ALL THE THINGS
+resource "aws_api_gateway_method_settings" "proxy" {
+    rest_api_id = "${local.rest_api_id}"
+    stage_name = "${aws_api_gateway_deployment.device_locator.stage_name}"
+    method_path = "${aws_api_gateway_resource.proxy.path_part}/${aws_api_gateway_method.proxy.http_method}"
+
+    settings {
+        logging_level = "INFO"
+        data_trace_enabled = true
+    }
 }
 
 ## https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-create-api-as-simple-proxy-for-lambda.html
@@ -31,5 +44,5 @@ resource "aws_api_gateway_integration" "lambda" {
 
     type = "AWS_PROXY"
     uri = "${module.device_locator.invoke_arn}"
-    integration_http_method = "ANY"
+    integration_http_method = "POST"
 }
