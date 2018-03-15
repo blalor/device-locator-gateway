@@ -26,7 +26,6 @@ resource "random_pet" "deployment_trigger" {
         gw_meth_gpx_auth   = "${aws_api_gateway_method.gpx_device.authorization}"
 
         gw_int_gpx_int_meth = "${aws_api_gateway_integration.gpx_device.integration_http_method}"
-        gw_int_gpx_content_hndl = "${aws_api_gateway_integration.gpx_device.content_handling}"
     }
 }
 
