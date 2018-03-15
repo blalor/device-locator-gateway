@@ -90,11 +90,21 @@ def handler(event, context):
     ).isoformat() + "Z"
 
     message = {
-        "device_id": event["pathParameters"]["device_id"],
-        "payload": event["queryStringParameters"],
+        "timestamp":  timestamp,
+        "device_id":  event["pathParameters"]["device_id"],
         "request_id": event["requestContext"]["requestId"],
-        "timestamp": timestamp,
+        "source":     "device-locator",
+
+        "position": {
+            "lat": event["queryStringParameters"]["lat"],
+            "lon": event["queryStringParameters"]["lon"],
+            "alt": event["queryStringParameters"]["alt"],
+        },
+        "meta": event["queryStringParameters"],
     }
+
+    for pos_key in ("lat", "lon", "alt"):
+        del message["meta"][pos_key]
 
     logger.info("publishing message: {}".format(message))
 
