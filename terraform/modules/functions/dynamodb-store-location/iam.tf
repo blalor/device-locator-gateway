@@ -37,7 +37,10 @@ data "aws_iam_policy_document" "exec" {
     statement {
         sid = "recordit"
 
-        actions = ["dynamodb:PutItem"]
+        actions = [
+            "dynamodb:PutItem",
+            "dynamodb:GetItem",
+        ]
 
         resources = [
             "${var.table_arn}"

@@ -99,12 +99,13 @@ def handler(event, context):
         #     },
         # }
 
-        logger.info("received {} message {} for device {} via subscription {}".format(
+        logger.info(
+            "received %s message %s for device %s via subscription %s",
             message["source"],
             message["request_id"],
             message["device_id"],
             rec["EventSubscriptionArn"],
-        ))
+        )
 
         timestamp = iso8601.parse_date(message["timestamp"])
         device_id = message["device_id"]
@@ -118,38 +119,60 @@ def handler(event, context):
             timediff = float(message["meta"]["timediff"]) # always negative
             timestamp = timestamp + datetime.timedelta(seconds=timediff)
 
-        item = {
-            ## primary key
+        item_key = {
             "device_id": device_id, # partition key
             "timestamp": Decimal((timestamp - EPOCH).total_seconds()), # sort key
-
-            "source": source,
-
-            "latitude":  latitude,
-            "longitude": longitude,
-            "altitude":  altitude,
-
-            "meta": message["meta"],
         }
 
-        try:
-            item["wx"] = dark_sky(latitude, longitude, timestamp)
-            item["wx"] = util.replace_floats(item["wx"])
+        ## check to see if the item already exists; the inreach-poller will emit
+        ## old events
+        do_put = False
+        item = table.get_item(Key=item_key).get("Item")
+        if item:
+            logger.info("found existing item with key ", item_key)
+        else:
+            item = {
+                ## primary key
+                "device_id": item_key["device_id"],
+                "timestamp": item_key["timestamp"],
 
-        except Exception:
-            logger.exception("unable to retrieve data from Dark Sky")
+                "source": source,
 
-        try:
-            item["opencage"] = opencage(latitude, longitude)
-            item["opencage"] = util.replace_floats(item["opencage"])
+                "latitude":  latitude,
+                "longitude": longitude,
+                "altitude":  altitude,
 
-        except Exception:
-            logger.exception("unable to retrieve data from OpenCage")
+                "meta": message["meta"],
+            }
+            do_put = True
 
-        table.put_item(Item=item)
+        if "wx" not in item:
+            try:
+                item["wx"] = dark_sky(latitude, longitude, timestamp)
+                item["wx"] = util.replace_floats(item["wx"])
+                do_put = True
+
+            except Exception:
+                logger.exception("unable to retrieve data from Dark Sky")
+
+        if "opencage" not in item:
+            try:
+                item["opencage"] = opencage(latitude, longitude)
+                item["opencage"] = util.replace_floats(item["opencage"])
+                do_put = True
+
+            except Exception:
+                logger.exception("unable to retrieve data from OpenCage")
+
+        if do_put:
+            table.put_item(Item=item)
+        else:
+            logger.info("no updates to item")
 
 
 def main():
+    logging.basicConfig()
+
     handler(
         {
             "Records": [
