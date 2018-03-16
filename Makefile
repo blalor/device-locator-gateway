@@ -45,11 +45,17 @@ stage/gpx.zip: $(shell find functions/gpx -type f ) stage/gpx/_ve/requirements.m
 	(cd stage/gpx/_ve/lib/python2.7/site-packages && zip -9qr $(CURRENT_DIR)/$@ .)
 	(cd functions/gpx && zip -9r $(CURRENT_DIR)/$@ .)
 
+stage/inreach-poller.zip: $(shell find functions/inreach-poller -type f ) stage/inreach-poller/_ve/requirements.met
+	rm -f $@
+	(cd stage/inreach-poller/_ve/lib/python2.7/site-packages && zip -9qr $(CURRENT_DIR)/$@ .)
+	(cd functions/inreach-poller && zip -9r $(CURRENT_DIR)/$@ .)
+
 PACKAGES := \
 	stage/device-locator.zip \
 	stage/publish-old-location.zip \
 	stage/dynamodb-store-location.zip \
-	stage/gpx.zip
+	stage/gpx.zip \
+	stage/inreach-poller.zip
 
 ## terraform init
 .PHONY: init
