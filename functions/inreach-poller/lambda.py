@@ -43,7 +43,10 @@ def handler(event, context):
         FEED_URL,
         auth=auth,
         params={
-            # "d1": "", ## Start date for the query – in UTC time
+            ## Start date for the query – in UTC time
+            ## the feed doesn't seem to always return the most recent; pull the
+            ## last 30 minutes of data.
+            "d1": (datetime.utcnow() - timedelta(minutes=30)).isoformat() + "Z",
         },
     )
     resp.raise_for_status()
