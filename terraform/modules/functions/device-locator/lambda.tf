@@ -6,8 +6,8 @@ resource "aws_lambda_function" "fn" {
     runtime = "python2.7"
     timeout = 30
 
-    s3_bucket = "${module.fingerprint_publish_old_location.bucket}"
-    s3_key    = "${module.fingerprint_publish_old_location.object}"
+    s3_bucket = "${module.fingerprinted_bucket_object.bucket}"
+    s3_key    = "${module.fingerprinted_bucket_object.object}"
 
     handler = "lambda.handler"
 
@@ -25,7 +25,7 @@ resource "aws_lambda_function" "fn" {
 resource "aws_lambda_permission" "api_gateway" {
     statement_id = "AllowAPIGatewayInvoke"
     action = "lambda:InvokeFunction"
-    function_name = "${aws_lambda_function.fn.arn}"
+    function_name = "${aws_lambda_function.fn.function_name}"
     principal = "apigateway.amazonaws.com"
 
     source_arn = "${var.api_gateway_exec_arn}"

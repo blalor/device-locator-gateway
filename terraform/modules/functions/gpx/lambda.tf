@@ -25,7 +25,7 @@ resource "aws_lambda_function" "fn" {
 resource "aws_lambda_permission" "api_gateway" {
     statement_id = "AllowAPIGatewayInvoke"
     action = "lambda:InvokeFunction"
-    function_name = "${aws_lambda_function.fn.arn}"
+    function_name = "${aws_lambda_function.fn.function_name}"
     principal = "apigateway.amazonaws.com"
 
     source_arn = "${var.api_gateway_exec_arn}"

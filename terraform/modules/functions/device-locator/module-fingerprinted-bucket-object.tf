@@ -1,4 +1,4 @@
-module "fingerprint_publish_old_location" {
+module "fingerprinted_bucket_object" {
     source = "../../fingerprinted-bucket-object"
 
     bucket = "${var.bucket}"
