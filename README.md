@@ -4,3 +4,6 @@
 - https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-create-api-as-simple-proxy-for-lambda.html#api-gateway-proxy-integration-lambda-function-python
 - https://docs.aws.amazon.com/lambda/latest/dg/python-context-object.html
 - https://docs.aws.amazon.com/lambda/latest/dg/accessing-resources.html
+- https://pypi.python.org/pypi/timezonefinder
+- https://github.com/evansiroky/timezone-boundary-builder
+- https://files.delorme.com/support/inreachwebdocs/KML%20Feeds.pdf
