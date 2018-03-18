@@ -215,35 +215,36 @@ def handler(event, context):
     for l in location_items:
         l["timestamp"] = datetime.utcfromtimestamp(l["timestamp"]).replace(tzinfo=UTC)
 
-    wpt = location_items[-1]
+    if location_items:
+        wpt = location_items[-1]
 
-    wpt_elt = ET.SubElement(root, "wpt")
-    wpt_elt.attrib["lat"] = str(wpt["latitude"])
-    wpt_elt.attrib["lon"] = str(wpt["longitude"])
+        wpt_elt = ET.SubElement(root, "wpt")
+        wpt_elt.attrib["lat"] = str(wpt["latitude"])
+        wpt_elt.attrib["lon"] = str(wpt["longitude"])
 
-    ET.SubElement(wpt_elt, "time").text = wpt["timestamp"].isoformat()
-    ET.SubElement(wpt_elt, "name").text = "Current location"
-    ET.SubElement(wpt_elt, "desc").text = pretty_format(wpt)
+        ET.SubElement(wpt_elt, "time").text = wpt["timestamp"].isoformat()
+        ET.SubElement(wpt_elt, "name").text = "Current location"
+        ET.SubElement(wpt_elt, "desc").text = pretty_format(wpt)
 
-    trk_elt = ET.SubElement(root, "trk")
-    trkseg_elt = ET.SubElement(trk_elt, "trkseg")
+        trk_elt = ET.SubElement(root, "trk")
+        trkseg_elt = ET.SubElement(trk_elt, "trkseg")
 
-    last_ts = location_items[0]["timestamp"]
-    for loc_item in location_items:
-        ts = loc_item["timestamp"]
-        if ts - last_ts > timedelta(minutes=30):
-            ## start a new trkseg
-            trkseg_elt = ET.SubElement(trk_elt, "trkseg")
+        last_ts = location_items[0]["timestamp"]
+        for loc_item in location_items:
+            ts = loc_item["timestamp"]
+            if ts - last_ts > timedelta(minutes=30):
+                ## start a new trkseg
+                trkseg_elt = ET.SubElement(trk_elt, "trkseg")
 
-        last_ts = ts
+            last_ts = ts
 
-        trkpt_elt = ET.SubElement(trkseg_elt, "trkpt")
-        trkpt_elt.attrib["lat"] = str(loc_item["latitude"])
-        trkpt_elt.attrib["lon"] = str(loc_item["longitude"])
-        ET.SubElement(trkpt_elt, "time").text = ts.isoformat() + "Z"
-        ET.SubElement(trkpt_elt, "ele").text = str(loc_item["altitude"])
+            trkpt_elt = ET.SubElement(trkseg_elt, "trkpt")
+            trkpt_elt.attrib["lat"] = str(loc_item["latitude"])
+            trkpt_elt.attrib["lon"] = str(loc_item["longitude"])
+            ET.SubElement(trkpt_elt, "time").text = ts.isoformat() + "Z"
+            ET.SubElement(trkpt_elt, "ele").text = str(loc_item["altitude"])
 
-        ET.SubElement(trkpt_elt, "desc").text = pretty_format(loc_item)
+            ET.SubElement(trkpt_elt, "desc").text = pretty_format(loc_item)
 
     gpx_output = StringIO()
     ET.ElementTree(root).write(gpx_output, encoding="UTF-8")
