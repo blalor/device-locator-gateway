@@ -25,7 +25,7 @@ The `publish-old-location` function is subscribed to the SNS topic.  It makes `G
 ## installation
 
 1. Get an API key for the [OpenCage geocoder](https://geocoder.opencagedata.com); this is free for up to 2,500 requests/day and 1 request/sec.
-2. Get an API key for [Dark Sky][https://darksky.net/dev]; the trial plan is free for up to 1,000 requests/day
+2. Get an API key for [Dark Sky](https://darksky.net/dev); the trial plan is free for up to 1,000 requests/day
 3. If you're using an inReach device, get the MapShare feed URL and password from your account (unauthenticated access is not supported).  Otherwise, delete `terraform/fn-inreach_poller.tf`.
 4. If you want to have the Device Locator updates forwarded to another endpoint, get that URL and look at `functions/publish-old-location/lambda.py`; otherwise delete `terraform/fn-publish_old_location.tf`.
 
