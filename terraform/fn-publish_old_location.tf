@@ -1,3 +1,8 @@
+variable "old_location_target_endpoint" {
+    type = "string"
+    description = "old /record_location endpoint to receive updates"
+}
+
 module "publish_old_location" {
     source = "modules/functions/publish-old-location"
 

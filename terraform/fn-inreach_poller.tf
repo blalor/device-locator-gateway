@@ -1,3 +1,23 @@
+variable "inreach_feed_url" {
+    type = "string"
+    description = "URL of MapShare feed; like https://inreach.garmin.com/feed/Share/your-feed"
+}
+
+variable "inreach_feed_password" {
+    type = "string"
+    description = "password for MapShare feed"
+}
+
+variable "inreach_device_id" {
+    type = "string"
+    description = "device id to use for new inReach points"
+}
+
+variable "inreach_poll_rate" {
+    type = "string"
+    description = "how often to check for updates"
+}
+
 module "inreach_poller" {
     source = "./modules/functions/inreach-poller"
 
