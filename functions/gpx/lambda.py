@@ -96,11 +96,19 @@ def pretty_format(loc):
         if "annotations" in oc and "timezone" in oc["annotations"]:
             tz_str = oc["annotations"]["timezone"]["name"]
 
-        city = oc["components"].get("city")
+        locality_keys = ("city", "village", "hamlet", "locality", "town")
+        locality = [v for k, v in oc["components"].items() if k in locality_keys]
+        if locality:
+            locality = locality[0]
+        else:
+            locality = oc["components"].get("county")
+            if not locality:
+                locality = "¯\_(ツ)_/¯"
+
         state = oc["components"].get("state")
         flag = oc.get("annotations", {}).get("flag", u"❓")
 
-        loc_str = u"in %s, %s %s" % (city, state, flag)
+        loc_str = u"in %s, %s %s" % (locality, state, flag)
 
     tz = UTC
     try:
