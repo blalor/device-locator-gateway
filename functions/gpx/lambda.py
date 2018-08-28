@@ -93,27 +93,30 @@ def pretty_format(loc):
     if loc.get("opencage"):
         oc = loc["opencage"][0]
 
-        if "annotations" in oc and "timezone" in oc["annotations"]:
-            tz_str = oc["annotations"]["timezone"]["name"]
+        annotations = oc["annotations"]
+        components = oc["components"]
+
+        if "timezone" in annotations:
+            tz_str = annotations["timezone"]["name"]
 
         # _type=road, road=Skyline Drive
         # _type=bar, bar=Bleacher Bar
         detail = None
-        _type = oc["components"].get("_type")
+        _type = components.get("_type")
         if _type:
-            detail = oc["components"].get(_type)
+            detail = components.get(_type)
 
         locality_keys = ("city", "village", "hamlet", "locality", "town")
-        locality = [v for k, v in oc["components"].items() if k in locality_keys]
+        locality = [v for k, v in components.items() if k in locality_keys]
         if locality:
             locality = locality[0]
         else:
-            locality = oc["components"].get("county")
+            locality = components.get("county")
             if not locality:
                 locality = r"¯\_(ツ)_/¯"
 
-        state = oc["components"].get("state")
-        flag = oc.get("annotations", {}).get("flag", u"❓")
+        state = components.get("state")
+        flag = annotations.get("flag", u"❓")
 
         loc_str = u"in %s %s" % (
             u", ".join([x for x in (detail, locality, state) if x]),
