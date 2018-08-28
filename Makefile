@@ -61,13 +61,16 @@ PACKAGES := \
 .PHONY: init
 init: terraform/.terraform
 terraform/.terraform:
-	cd terraform && terraform init
+	@test -n "$(STATE_BUCKET)"        || { echo "STATE_BUCKET not set"; exit 1; }
+	@test -n "$(STATE_BUCKET_REGION)" || { echo "STATE_BUCKET_REGION not set"; exit 1; }
+
+	cd terraform && terraform init -input=false -backend-config=bucket=$(STATE_BUCKET) -backend-config=region=$(STATE_BUCKET_REGION)
 
 ## terraform plan
 .PHONY: plan
 plan: $(PLANFILE) | terraform/.terraform
 $(PLANFILE): $(TF_SOURCES) $(PACKAGES)
-	cd terraform && terraform plan -out $@
+	cd terraform && terraform plan -input=false -out=$@
 
 ## terraform apply
 .PHONY: apply
