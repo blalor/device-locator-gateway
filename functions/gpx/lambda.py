@@ -96,6 +96,13 @@ def pretty_format(loc):
         if "annotations" in oc and "timezone" in oc["annotations"]:
             tz_str = oc["annotations"]["timezone"]["name"]
 
+        # _type=road, road=Skyline Drive
+        # _type=bar, bar=Bleacher Bar
+        detail = None
+        _type = oc["components"].get("_type")
+        if _type:
+            detail = oc["components"].get(_type)
+
         locality_keys = ("city", "village", "hamlet", "locality", "town")
         locality = [v for k, v in oc["components"].items() if k in locality_keys]
         if locality:
@@ -103,12 +110,15 @@ def pretty_format(loc):
         else:
             locality = oc["components"].get("county")
             if not locality:
-                locality = "¯\_(ツ)_/¯"
+                locality = r"¯\_(ツ)_/¯"
 
         state = oc["components"].get("state")
         flag = oc.get("annotations", {}).get("flag", u"❓")
 
-        loc_str = u"in %s, %s %s" % (locality, state, flag)
+        loc_str = u"in %s %s" % (
+            u", ".join([x for x in (detail, locality, state) if x]),
+            flag,
+        )
 
     tz = UTC
     try:
